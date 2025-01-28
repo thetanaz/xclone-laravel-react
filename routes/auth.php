@@ -9,7 +9,14 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Requests\CreateUsernameRequest;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
@@ -33,6 +40,33 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
+    Route::get('/auth/redirect', function () {
+        return Socialite::driver('google')->redirect();
+    })->name('google.login');
+    Route::get('/auth/callback', function () {
+        $googleUser = Socialite::driver('google')->user();
+
+        $user = User::where('email', $googleUser->email)->first();
+
+        if (!$user) {
+            $password = Str::password(
+                length: 12,
+                symbols: true,
+
+            );
+            $user = User::create([
+                'name' => $googleUser->name,
+                'email' => $googleUser->email,
+                'google_id' => $googleUser->id,
+                'avatar' => $googleUser->avatar,
+                'password' => Hash::make($password),
+            ]);
+        }
+
+        Auth::login($user);
+
+        return redirect('/home');
+    });
 });
 
 Route::middleware('auth')->group(function () {
@@ -53,7 +87,15 @@ Route::middleware('auth')->group(function () {
     Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
 
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
-
+    Route::get('auth/username/Create', function () {
+        return Inertia::render('Auth/CreateUsername');
+    })->name('username.create');
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+    Route::post('/auth/createUsername', function (CreateUsernameRequest $request) {
+        $user = $request->user();
+        $user->username = $request->username;
+        $user->save();
+        return redirect('home');
+    });
 });
