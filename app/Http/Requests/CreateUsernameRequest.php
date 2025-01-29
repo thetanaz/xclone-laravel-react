@@ -11,9 +11,7 @@ class CreateUsernameRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        if (auth()->user()) {
-            return true;  // Changed to true to allow the request
-        }
+        return auth()->check();
     }
     /**
      * Get the validation rules that apply to the request.

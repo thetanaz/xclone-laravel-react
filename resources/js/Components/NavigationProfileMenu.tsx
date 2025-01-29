@@ -3,6 +3,7 @@ import { router } from "@inertiajs/react";
 import { EllipsisVertical, UserRound } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import ThemeToggle from "./ThemeToggle";
+import { Avatar } from "./Avatar";
 
 type NavigationProfileProps = {
     username: string;
@@ -44,7 +45,7 @@ const NavigationProfileMenu = ({
                     ref={menuRef}
                     className="absolute bottom-full space-y-2 left-0 lg:left-1/2 lg:-translate-x-1/2 mb-2 w-[200px] bg-black border border-zinc-800 rounded-xl shadow-lg p-2"
                 >
-                    <ThemeToggle />
+                    <ThemeToggle isOpenToggle={setIsOpen} />
                     <Button
                         variant={"destructive"}
                         className="w-full text-left p-3 hover:bg-zinc-900 rounded-lg"
@@ -62,18 +63,7 @@ const NavigationProfileMenu = ({
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex mx-auto hover:bg-zinc-800  rounded-3xl justify-center lg:gap-x-2 items-center mt-auto mb-5 w-[3rem] lg:w-auto"
             >
-                {avatar ? (
-                    <img
-                        className="rounded-full w-[3rem]"
-                        src={avatar}
-                        alt="avatar"
-                    />
-                ) : (
-                    <UserRound
-                        className="bg-blue-600 w-[3rem] rounded-full"
-                        size={"fill"}
-                    />
-                )}
+                <Avatar avatar={avatar} />
                 <div className="flex flex-col text-start">
                     <h2 className="font-bold hidden lg:inline">{name}</h2>
                     <p className="text-muted-foreground hidden lg:inline">

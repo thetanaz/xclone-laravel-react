@@ -40,6 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'api' => [
+            'driver' => 'session', // Use session driver for cookies
+            'provider' => 'users', // Same provider as web
+        ],
     ],
 
     /*
@@ -64,6 +68,7 @@ return [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
+
 
         // 'users' => [
         //     'driver' => 'database',

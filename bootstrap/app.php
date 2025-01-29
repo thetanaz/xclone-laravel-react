@@ -10,6 +10,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
+        api: __DIR__ . '/../routes/api.php',
+        apiPrefix: 'api',
         web: __DIR__ . '/../routes/web.php',
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
@@ -19,27 +21,19 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
-
-        // Exclude from specific routes
-
-
-        //
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->renderable(function (NotFoundHttpException $e, $request) {
             if ($request->wantsJson()) {
                 return response()->json(['message' => 'Not Found'], 404);
             }
-
             return Inertia::render('Errors/NotFound')
                 ->toResponse($request)
                 ->setStatusCode(404);
-        });;
-
+        });
         $exceptions->renderable(function (AccessDeniedHttpException $e, $request) {
             // 403 handling
         });
-
         $exceptions->renderable(function (HttpException $e, $request) {
             // Generic HTTP exception handling
         });

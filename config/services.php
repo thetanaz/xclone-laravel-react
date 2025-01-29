@@ -39,4 +39,7 @@ return [
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => 'http://localhost:8000/auth/callback',
     ],
+    'giphy' => [
+        'key' => env('GIPHY_API_KEY'),
+    ],
 ];

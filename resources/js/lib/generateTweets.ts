@@ -14,7 +14,7 @@ const generateName = (): string => {
 };
 
 const generateContent = (): string => {
-    const length = Math.floor(Math.random() * 121) + 30;
+    const length = Math.floor(Math.random() * 221) + 30;
     const words: string[] = [];
     const wordCount = Math.ceil(length / 5);
 
