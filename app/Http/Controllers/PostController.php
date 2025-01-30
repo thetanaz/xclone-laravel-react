@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreatePostRequest;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class PostController extends Controller
 {
@@ -20,9 +21,15 @@ class PostController extends Controller
             'parent_id' => $validatedData['parent_id'] ?? null,
         ]);
 
-        return response()->json([
-            'message' => 'Post created successfully',
+        return redirect()->back();
+    }
+
+    public function view($id)
+    {
+        $post = Post::with('user')->findOrFail($id);
+
+        return Inertia::render('PostPage', [
             'post' => $post
-        ], 201);
+        ]);
     }
 }

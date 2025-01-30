@@ -14,7 +14,7 @@ export default function NavigationItem({
     children,
 }: NavigationItemProps) {
     const { url } = usePage();
-    console.log(url, href);
+
     return (
         <li>
             <Link

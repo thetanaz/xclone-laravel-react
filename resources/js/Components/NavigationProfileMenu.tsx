@@ -63,7 +63,7 @@ const NavigationProfileMenu = ({
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex mx-auto hover:bg-zinc-800  rounded-3xl justify-center lg:gap-x-2 items-center mt-auto mb-5 w-[3rem] lg:w-auto"
             >
-                <Avatar avatar={avatar} />
+                <Avatar avatar={avatar || null} />
                 <div className="flex flex-col text-start">
                     <h2 className="font-bold hidden lg:inline">{name}</h2>
                     <p className="text-muted-foreground hidden lg:inline">

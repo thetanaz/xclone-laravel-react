@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 use App\Http\Middleware\EnsureUsernameIsSet;
 use App\Models\Post;
 use App\Models\User;
@@ -55,13 +56,16 @@ Route::middleware(['auth', EnsureUsernameIsSet::class])->group(function () {
         }])->get();
         return Inertia::render('Home', ['posts' => $posts]);
     })->name('home');
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/messages', function (Request $request) {
         return Inertia::render('Messages');
     });
     Route::post('/posts/store', [PostController::class, 'store']);
+    Route::get('/posts/{id}', [PostController::class, 'view']);
 });
 
 require __DIR__ . '/auth.php';
+
+Route::get('/{username}', [UserController::class, 'view']);

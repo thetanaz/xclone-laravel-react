@@ -1,12 +1,13 @@
 import { useTheme } from "@/context/ThemeContext";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
-import { Gif } from "@giphy/react-components";
-import { useForm } from "@inertiajs/react";
+import { router, useForm } from "@inertiajs/react";
 import axios from "axios";
 import { Smile } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Avatar } from "./Avatar";
+import DisplaySelectedGif from "./DisplaySelectedGif";
+import GifPicker from "./GifPicker";
 
 export default function CreatePost({ avatar }: { avatar: string | undefined }) {
     const { theme } = useTheme();
@@ -93,7 +94,9 @@ export default function CreatePost({ avatar }: { avatar: string | undefined }) {
             const response = await axios.post("/posts/store", formData);
 
             console.log("Post created:", response.data);
-            reset(); // Reset the form if needed
+            reset();
+            setSelectedGif(null);
+            router.reload({ only: ["posts"] }); // Reset the form if needed
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 // Handle validation errors from Laravel (422 status)
@@ -115,7 +118,7 @@ export default function CreatePost({ avatar }: { avatar: string | undefined }) {
         <div className="w-full relative border-b border-zinc-800 dark:bg-black flex flex-col">
             <form className="w-full" onSubmit={handleSubmit}>
                 <div className="flex mt-3 ml-2">
-                    <Avatar avatar={avatar} />
+                    <Avatar avatar={avatar || null} />
                     <textarea
                         ref={textareaRef}
                         name="content"
@@ -128,23 +131,11 @@ export default function CreatePost({ avatar }: { avatar: string | undefined }) {
                 </div>
 
                 {selectedGif && (
-                    <div className="relative w-[320px] mx-auto flex items-center justify-center mb-2">
-                        <button
-                            type="button"
-                            className="absolute top-2 right-2 bg-gray-800/75 rounded-full w-6 h-6 flex items-center justify-center text-white hover:bg-gray-700/75 z-10"
-                            onClick={() => {
-                                setSelectedGif(null);
-                                setData("gif", null);
-                            }}
-                        >
-                            ×
-                        </button>
-                        <Gif
-                            gif={selectedGif}
-                            width={320}
-                            className="rounded-3xl pointer-events-none"
-                        />
-                    </div>
+                    <DisplaySelectedGif
+                        selectedGif={selectedGif}
+                        setSelectedGif={setSelectedGif}
+                        setData={setData}
+                    />
                 )}
 
                 <div className="flex items-center mx-2 my-2 ml-12">
@@ -167,11 +158,9 @@ export default function CreatePost({ avatar }: { avatar: string | undefined }) {
                             setIsGifPickerOpen((prev) => !prev);
                             setIsPickerOpen(false);
                         }}
-                        className="ml-2"
+                        className="ml-2 text-blue-600 self-center text-xs cursor-pointer font-bold px-2 py-1 border border-blue-600 rounded"
                     >
-                        <span className="text-blue-600 self-center text-xs cursor-pointer font-bold px-2 py-1 border border-blue-600 rounded">
-                            GIF
-                        </span>
+                        <span>GIF</span>
                     </div>
 
                     <button
@@ -200,46 +189,13 @@ export default function CreatePost({ avatar }: { avatar: string | undefined }) {
                 )}
 
                 {isGifPickerOpen && (
-                    <div
-                        className="absolute z-10 bg-white dark:bg-black p-2 rounded-lg shadow-lg mt-2"
-                        ref={gifPickerRef}
-                        style={{ width: "400px" }}
-                    >
-                        <div className="mb-2">
-                            <input
-                                type="text"
-                                placeholder="Search GIFs..."
-                                className="w-full p-2 rounded border dark:bg-gray-800 dark:text-white"
-                                value={gifSearch}
-                                onChange={(e) => {
-                                    setGifSearch(e.target.value);
-                                    fetchGifs(e.target.value);
-                                }}
-                            />
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 h-64 overflow-y-auto">
-                            {gifs.map((gif) => (
-                                <div
-                                    key={gif.id}
-                                    className="cursor-pointer relative aspect-square"
-                                    onClick={() => {
-                                        setSelectedGif(gif);
-                                        setData(
-                                            "gif",
-                                            gif.images.fixed_height.url
-                                        );
-                                        setIsGifPickerOpen(false);
-                                    }}
-                                >
-                                    <img
-                                        src={gif.images.fixed_height.url}
-                                        alt={gif.title}
-                                        className="w-full h-full object-cover rounded"
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                    <GifPicker
+                        isGifPickerOpen={isGifPickerOpen}
+                        gifPickerRef={gifPickerRef}
+                        setData={setData}
+                        setIsGifPickerOpen={setIsGifPickerOpen}
+                        setSelectedGif={setSelectedGif}
+                    />
                 )}
             </form>
         </div>

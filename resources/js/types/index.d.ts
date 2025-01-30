@@ -13,4 +13,5 @@ export type PageProps<
     auth: {
         user: User;
     };
+    urlPrev?: string;
 };
