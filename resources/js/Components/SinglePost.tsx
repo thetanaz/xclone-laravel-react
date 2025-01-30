@@ -3,7 +3,7 @@ import { Avatar } from "./Avatar";
 import { Post } from "@/types/types";
 import { Heart, MessageCircleReply, Repeat2 } from "lucide-react";
 import { MouseEvent, useState } from "react";
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 
 export default function SinglePost({ post }: { post: Post }) {
     const [displayReplyBox, setDisplayReplyBox] = useState(false);
@@ -15,7 +15,14 @@ export default function SinglePost({ post }: { post: Post }) {
             key={post.id}
         >
             <div className="flex gap-2">
-                <Avatar avatar={post.user.avatar || null} />
+                <div
+                    onClick={(e: MouseEvent) => {
+                        e.preventDefault();
+                        router.visit(`/${post.user.username}`);
+                    }}
+                >
+                    <Avatar avatar={post.user.avatar || null} />
+                </div>
                 <div className="flex flex-col flex-1 min-w-0">
                     <div className="flex items-center ">
                         <div className="flex flex-col items-start sm:items-center gap-x-1 sm:gap-2 sm:flex-row">

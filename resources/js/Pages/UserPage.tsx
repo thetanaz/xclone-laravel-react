@@ -1,8 +1,10 @@
+import { Avatar } from "@/Components/Avatar";
 import SingleUserPost from "@/Components/SingleUserPost";
 import UserTopBar from "@/Components/UserTopBar";
 import MainLayout from "@/Layouts/MainLayout";
 import { PageProps } from "@/types";
 import { Post, User } from "@/types/types";
+import { router } from "@inertiajs/react";
 
 type UserPageProps = PageProps & {
     user: User;
@@ -21,21 +23,22 @@ const UserPage = ({ auth, user, posts, postCount }: UserPageProps) => {
                         className="max-h-[250px]"
                         alt="banner"
                     />
-                    <img
-                        className="absolute rounded-full w-[100px] h-[100px] left-5 bottom-[-40px]"
-                        src={user.avatar || undefined}
-                        alt="avatar"
-                    />
+                    <div className="absolute rounded-full left-3 bottom-[-40px]">
+                        <Avatar size="large" avatar={user.avatar} />
+                    </div>
                 </div>
                 <div className="relative w-full border-b border-b-zinc-800 p-4">
                     <div className="absolute top-4 right-4 flex gap-x-2">
-                        <button className="border border-black dark:border-white p-2 rounded-3xl hover:bg-zinc-300 dark:hover:bg-zinc-800">
+                        <button
+                            onClick={() => router.visit("/profile/edit")}
+                            className="border border-black dark:border-white p-2 rounded-3xl hover:bg-zinc-300 dark:hover:bg-zinc-800"
+                        >
                             Edit Profile
                         </button>
                     </div>
 
-                    <div className="flex flex-col pt-5">
-                        <h2 className="text-2xl font-bold">{user.name}</h2>
+                    <div className="flex flex-col pt-8 ml-1">
+                        <h2 className="text-xl font-bold">{user.name}</h2>
                         <h3 className="text-zinc-500 mb-2">
                             @{user.username.toLowerCase().replace(/\s+/g, "")}
                         </h3>
