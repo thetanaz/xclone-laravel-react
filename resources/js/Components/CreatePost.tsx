@@ -3,8 +3,8 @@ import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { router, useForm } from "@inertiajs/react";
 import axios from "axios";
-import { Smile } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { LoaderCircle, Smile } from "lucide-react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Avatar } from "./Avatar";
 import DisplaySelectedGif from "./DisplaySelectedGif";
 import GifPicker from "./GifPicker";
@@ -16,12 +16,19 @@ export default function CreatePost({ avatar }: { avatar: string | undefined }) {
     const [selectedGif, setSelectedGif] = useState<any>(null);
     const [gifs, setGifs] = useState<any[]>([]);
     const [gifSearch, setGifSearch] = useState("");
-
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const pickerRef = useRef<HTMLDivElement>(null);
     const gifPickerRef = useRef<HTMLDivElement>(null);
     const smileRef = useRef<HTMLDivElement>(null);
     const gifTriggerRef = useRef<HTMLDivElement>(null);
+
+    const LazyPicker = lazy(async () => {
+        const { default: Picker } = await import("@emoji-mart/react");
+        const { default: data } = await import("@emoji-mart/data");
+        return {
+            default: (props: any) => <Picker data={data} {...props} />,
+        };
+    });
 
     const {
         data: formData,
@@ -173,18 +180,28 @@ export default function CreatePost({ avatar }: { avatar: string | undefined }) {
                 </div>
 
                 {isPickerOpen && (
-                    <div className="absolute z-10" ref={pickerRef}>
-                        <Picker
-                            theme={theme}
-                            background={"black"}
-                            data={data}
-                            onEmojiSelect={(emoji: any) =>
-                                setData(
-                                    "content",
-                                    formData.content + emoji.native
-                                )
+                    <div
+                        className="absolute z-10 w-[350px] h-[430px] bg-zinc-800 rounded-lg"
+                        ref={pickerRef}
+                    >
+                        <Suspense
+                            fallback={
+                                <div className="p-2 flex items-center justify-center m-auto w-full h-full text-gray-500">
+                                    <LoaderCircle className="animate-spin" />
+                                </div>
                             }
-                        />
+                        >
+                            <LazyPicker
+                                theme={theme}
+                                background={"black"}
+                                onEmojiSelect={(emoji: any) =>
+                                    setData(
+                                        "content",
+                                        formData.content + emoji.native
+                                    )
+                                }
+                            />
+                        </Suspense>
                     </div>
                 )}
 
