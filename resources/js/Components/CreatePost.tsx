@@ -1,15 +1,24 @@
 import { useTheme } from "@/context/ThemeContext";
-import data from "@emoji-mart/data";
-import Picker from "@emoji-mart/react";
 import { router, useForm } from "@inertiajs/react";
 import axios from "axios";
-import { LoaderCircle, Smile } from "lucide-react";
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { LoaderCircle, Smile, X } from "lucide-react";
+import { FormEvent, lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Avatar } from "./Avatar";
 import DisplaySelectedGif from "./DisplaySelectedGif";
 import GifPicker from "./GifPicker";
+import { cn } from "@/lib/utils";
 
-export default function CreatePost({ avatar }: { avatar: string | undefined }) {
+type CreatePostProps = {
+    avatar: string | undefined;
+    isFloating?: boolean;
+    setIsPostOpen?: (value: boolean) => void;
+};
+
+export default function CreatePost({
+    avatar,
+    isFloating,
+    setIsPostOpen,
+}: CreatePostProps) {
     const { theme } = useTheme();
     const [isPickerOpen, setIsPickerOpen] = useState(false);
     const [isGifPickerOpen, setIsGifPickerOpen] = useState(false);
@@ -93,16 +102,16 @@ export default function CreatePost({ avatar }: { avatar: string | undefined }) {
         return () => document.removeEventListener("click", handleOutsideClick);
     }, []);
 
-    // ... your other code
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             const response = await axios.post("/posts/store", formData);
 
-            console.log("Post created:", response.data);
             reset();
             setSelectedGif(null);
+            if (setIsPostOpen) {
+                setIsPostOpen(false);
+            }
             router.reload({ only: ["posts"] }); // Reset the form if needed
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -122,18 +131,34 @@ export default function CreatePost({ avatar }: { avatar: string | undefined }) {
     };
 
     return (
-        <div className="w-full relative border-b border-zinc-800 dark:bg-black flex flex-col">
+        <div
+            className={cn(
+                "w-full relative border-b border-zinc-800 bg-white dark:bg-black flex flex-col",
+                isFloating && "min-h-[220px] rounded-xl gap-y-10"
+            )}
+        >
+            {isFloating && (
+                <button
+                    onClick={() => setIsPostOpen!(false)}
+                    className="absolute top-2 right-2 rounded-full hover:bg-zinc-300 dark:hover:bg-zinc-700 p-1"
+                >
+                    <X />
+                </button>
+            )}
             <form className="w-full" onSubmit={handleSubmit}>
-                <div className="flex mt-3 ml-2">
+                <div className={cn("flex mt-3 ml-2")}>
                     <Avatar avatar={avatar || null} />
                     <textarea
                         ref={textareaRef}
                         name="content"
                         value={formData.content}
                         onChange={(e) => setData("content", e.target.value)}
-                        className="w-full border-none focus:outline-none focus:ring-0 dark:bg-black resize-none text-black dark:text-white overflow-hidden"
+                        className={cn(
+                            "w-full border-none focus:outline-none focus:ring-0 dark:bg-black resize-none text-black dark:text-white overflow-hidden",
+                            isFloating && "mr-5"
+                        )}
                         placeholder="What's happening?"
-                        rows={1}
+                        rows={isFloating ? 5 : 1}
                     />
                 </div>
 
@@ -172,7 +197,7 @@ export default function CreatePost({ avatar }: { avatar: string | undefined }) {
 
                     <button
                         type="submit"
-                        className="ml-auto rounded-3xl mr-2 dark:bg-white dark:text-black py-2 px-5 font-bold"
+                        className="ml-auto rounded-3xl mr-2 dark:bg-white border border-black dark:text-black py-2 px-5 font-bold"
                         disabled={processing}
                     >
                         {processing ? "Posting..." : "Post"}

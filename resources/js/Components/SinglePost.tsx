@@ -7,7 +7,7 @@ import { Link, router } from "@inertiajs/react";
 
 export default function SinglePost({ post }: { post: Post }) {
     const [displayReplyBox, setDisplayReplyBox] = useState(false);
-    console.log(post.user.avatar);
+
     return (
         <Link
             href={`/posts/${post.id}`}
