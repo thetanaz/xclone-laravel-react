@@ -16,4 +16,6 @@ export type Post = {
     created_at: string;
     updated_at: string;
     user: User;
+    likes_count: number; // Total number of likes
+    liked_by_user: boolean; // Whether the current user liked the post
 };

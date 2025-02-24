@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
@@ -49,13 +51,7 @@ Route::get('/dashboard', function () {
 
 Route::middleware(['auth', EnsureUsernameIsSet::class])->group(function () {
 
-    Route::get('/home', function () {
-
-        $posts = Post::with(['user' => function ($query) {
-            $query->select('id', 'username', 'avatar', 'name');
-        }])->get();
-        return Inertia::render('Home', ['posts' => $posts]);
-    })->name('home');
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -63,6 +59,7 @@ Route::middleware(['auth', EnsureUsernameIsSet::class])->group(function () {
         return Inertia::render('Messages');
     });
     Route::post('/posts/store', [PostController::class, 'store']);
+    Route::post('/posts/{post}/like', [LikeController::class, 'toggle']);
     Route::get('/posts/{id}', [PostController::class, 'view']);
 });
 

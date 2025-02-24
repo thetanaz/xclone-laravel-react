@@ -6,18 +6,18 @@ export default function Guest({ children }: PropsWithChildren) {
     const { url } = usePage();
 
     return (
-        <div className=" min-h-screen flex items-center justify-center w-full dark:bg-black">
-            <div className="flex gap-x-20 items-end bg-gray-100 pt-6 sm:justify-center sm:pt-0 dark:bg-black">
+        <div className=" min-h-screen flex items-center justify-center w-full bg-gray-200 dark:bg-black">
+            <div className="flex gap-x-20 items-end  pt-6 sm:justify-center sm:pt-0 dark:bg-black">
                 <div>
                     <Link href="/">
-                        <ApplicationLogo className="fill-white" />
+                        <ApplicationLogo className="dark:fill-white fill-black" />
                     </Link>
                 </div>
                 <div className="flex flex-col gap-y-3 items-center justify-end">
                     {" "}
                     <a
                         href={route("google.login")}
-                        className="bg-white font-bold text-black p-3 rounded-3xl flex gap-x-3 items-center"
+                        className="dark:bg-white bg-black text-white font-bold dark:text-black p-3 rounded-3xl flex gap-x-3 items-center"
                     >
                         <img
                             src="googlelogo.svg"
@@ -33,7 +33,7 @@ export default function Guest({ children }: PropsWithChildren) {
                         <h3 className="text-white">OR</h3>
                         <div className="flex-1 border border-t border-muted-foreground" />
                     </div>
-                    <div className=" w-full overflow-hidden border-white border-2 px-6 py-4 shadow-md sm:max-w-md sm:rounded-lg">
+                    <div className=" w-full overflow-hidden border-black dark:border-white border-2 px-6 py-4 shadow-md sm:max-w-md sm:rounded-lg">
                         {children}
                     </div>
                 </div>

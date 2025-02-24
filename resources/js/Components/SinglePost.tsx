@@ -4,10 +4,24 @@ import { Post } from "@/types/types";
 import { Heart, MessageCircleReply, Repeat2 } from "lucide-react";
 import { MouseEvent, useState } from "react";
 import { Link, router } from "@inertiajs/react";
+import axios from "axios";
 
 export default function SinglePost({ post }: { post: Post }) {
     const [displayReplyBox, setDisplayReplyBox] = useState(false);
+    const [isLiked, setIsLiked] = useState(post.liked_by_user);
+    const [likesCount, setLikesCount] = useState(post.likes_count);
 
+    const handleLikeToggle = async (e: MouseEvent) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post(`/posts/${post.id}/like`);
+
+            setIsLiked((prev) => !prev);
+            setLikesCount(response.data.likes_count);
+        } catch (error) {
+            console.error("Error toggling like:", error);
+        }
+    };
     return (
         <Link
             href={`/posts/${post.id}`}
@@ -43,7 +57,7 @@ export default function SinglePost({ post }: { post: Post }) {
                             • {formatDistanceToNowStrict(post.created_at)}
                         </span>
                     </div>
-                    <p className=" break-words">{post.content}</p>
+                    <p className=" break-words">{post.content} test22</p>
                 </div>
             </div>
             {post.gif && (
@@ -64,7 +78,12 @@ export default function SinglePost({ post }: { post: Post }) {
                     <MessageCircleReply size={20} />
                 </button>
                 <Repeat2 size={20} />
-                <Heart size={20} />
+                <button onClick={handleLikeToggle}>
+                    <Heart
+                        size={20}
+                        className={isLiked ? " fill-red-600" : " fill-none"}
+                    />
+                </button>
             </div>
         </Link>
     );
